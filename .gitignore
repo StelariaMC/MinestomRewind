@@ -58,3 +58,11 @@ gradle-app.setting
 # When compiling we get a docs folder
 /docs
 .mixin.out/
+
+bin/
+
+# Eclipse cache files
+.classpath
+.factorypath
+.project
+.settings
