@@ -4,9 +4,9 @@ plugins {
     id 'java-library'
     id 'java'
     id 'maven-publish'
-    id 'net.ltgt.apt' version '0.10'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.22'
     id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'net.minestomrewind.server'
@@ -101,6 +101,19 @@ java {
     withSourcesJar()
 }
 
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+shadowJar {
+    mergeServiceFiles()
+    archiveClassifier.set('')
+}
+
+tasks.named('jar') {
+    enabled = false
+}
+
 test {
     useJUnitPlatform()
 }
@@ -121,7 +134,7 @@ dependencies {
     api 'io.netty.incubator:netty-incubator-transport-native-io_uring:0.0.4.Final:linux-x86_64'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-    compile group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+    implementation 'org.apache.commons:commons-text:1.9'
 
     // https://mvnrepository.com/artifact/it.unimi.dsi/fastutil
     api 'it.unimi.dsi:fastutil:8.5.2'
@@ -130,45 +143,43 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.6'
 
     // Noise library for terrain generation
-    // https://jitpack.io/#Articdive/Jnoise
-    api 'com.github.Articdive:Jnoise:1.0.0'
+    implementation 'com.github.Articdive:Jnoise:1.0.0'
 
-    // https://mvnrepository.com/artifact/org.rocksdb/rocksdbjni
-    api 'org.rocksdb:rocksdbjni:6.15.2'
+    // RocksDB
+    implementation 'org.rocksdb:rocksdbjni:6.15.2'
 
     // Logging
-    api 'org.apache.logging.log4j:log4j-core:2.14.0'
-    // SLF4J is the base logger for most libraries, therefore we can hook it into log4j2.
-    api 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.14.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.0'
 
     // Guava 21.0+ required for Mixin, but Authlib imports 17.0
     api 'com.google.guava:guava:21.0'
-    api 'com.mojang:authlib:1.5.21'
+    implementation 'com.mojang:authlib:1.5.21'
 
     // Code modification
-    api "org.ow2.asm:asm:${asmVersion}"
-    api "org.ow2.asm:asm-tree:${asmVersion}"
-    api "org.ow2.asm:asm-analysis:${asmVersion}"
-    api "org.ow2.asm:asm-util:${asmVersion}"
-    api "org.ow2.asm:asm-commons:${asmVersion}"
-    api "org.spongepowered:mixin:${mixinVersion}"
+    implementation "org.ow2.asm:asm:${asmVersion}"
+    implementation "org.ow2.asm:asm-tree:${asmVersion}"
+    implementation "org.ow2.asm:asm-analysis:${asmVersion}"
+    implementation "org.ow2.asm:asm-util:${asmVersion}"
+    implementation "org.ow2.asm:asm-commons:${asmVersion}"
+    implementation "org.spongepowered:mixin:${mixinVersion}"
 
     // Path finding
-    api 'com.github.MadMartian:hydrazine-path-finding:1.5.4'
+    implementation 'com.github.MadMartian:hydrazine-path-finding:1.5.4'
 
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${project.kotlinVersion}"
-    api "org.jetbrains.kotlin:kotlin-reflect:${project.kotlinVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${project.kotlinVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:${project.kotlinVersion}"
 
     // NBT parsing/manipulation/saving
-    api("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}")
-    api("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}:gson")
-    api("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}") {
+    implementation("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}")
+    implementation("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}:gson")
+    implementation("com.github.jglrxavpok:Hephaistos:${project.hephaistosVersion}") {
         capabilities {
             requireCapability("org.jglrxavpok.nbt:Hephaistos-gson")
         }
     }
 
-    api "com.github.Minestom:DependencyGetter:v1.0.1"
+    implementation "com.github.Minestom:DependencyGetter:v1.0.1"
 
     api("net.kyori:adventure-api:${project.adventureVersion}")
     api("net.kyori:adventure-text-serializer-gson:${project.adventureVersion}")
@@ -196,9 +207,9 @@ dependencies {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
             artifactId = 'minestomrewind'
-            from components.java
         }
     }
 }
