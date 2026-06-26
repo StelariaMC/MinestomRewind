@@ -32,5 +32,6 @@ public class ClientPlayPacketsHandler extends ClientPacketsHandler {
         register(0x1A, ClientAnimationPacket::new);
         register(0x1B, ClientSpectatePacket::new);
         register(0x1C, ClientPlayerBlockPlacementPacket::new);
+        register(0x1D, ClientUseItemPacket::new);
     }
 }

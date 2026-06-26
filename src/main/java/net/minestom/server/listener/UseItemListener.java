@@ -9,8 +9,13 @@ import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.client.play.ClientPlayerBlockPlacementPacket;
+import net.minestom.server.network.packet.client.play.ClientUseItemPacket;
 
 public class UseItemListener {
+
+    public static void useItemListener(ClientUseItemPacket packet, Player player) {
+        useItem(player, packet.hand);
+    }
 
     public static boolean useItemListener(ClientPlayerBlockPlacementPacket packet, Player player) {
         // Y = -1 = 4096 - 1 = 4095
@@ -18,6 +23,11 @@ public class UseItemListener {
             return false;
         }
 
+        useItem(player, 0);
+        return true;
+    }
+
+    private static void useItem(Player player, int hand) {
         final PlayerInventory inventory = player.getInventory();
         ItemStack itemStack = inventory.getItemInHand();
         itemStack.onRightClick(player);
@@ -27,7 +37,7 @@ public class UseItemListener {
         final PlayerInventory playerInventory = player.getInventory();
         if (useItemEvent.isCancelled()) {
             playerInventory.update();
-            return true;
+            return;
         }
 
         itemStack = useItemEvent.getItemStack();
@@ -70,8 +80,6 @@ public class UseItemListener {
                 player.sendPacketToViewers(player.getMetadataPacket());
             });
         }
-
-        return true;
     }
 
 }
