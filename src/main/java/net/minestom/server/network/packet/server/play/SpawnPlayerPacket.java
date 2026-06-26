@@ -35,7 +35,7 @@ public class SpawnPlayerPacket implements ServerPacket {
             entry.write(writer);
         }
 
-        writer.writeByte((byte) 0x7F); // End
+        writer.writeByte((byte) 0xFF); // End
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.minestom.server.entity;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minestom.server.chat.Adventure;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
@@ -28,11 +27,11 @@ public class Metadata {
     }
 
     public static Value<Short> Short(short value) {
-        return new Value<>(TYPE_SHORT, value, writer -> writer.writeShort(value));
+        return new Value<>(TYPE_VARINT, value, writer -> writer.writeVarInt(value));
     }
 
     public static Value<Integer> Int(int value) {
-        return new Value<>(TYPE_INT, value, writer -> writer.writeInt(value));
+        return new Value<>(TYPE_VARINT, value, writer -> writer.writeVarInt(value));
     }
 
     public static Value<Float> Float(float value) {
@@ -56,29 +55,29 @@ public class Metadata {
     }
 
     public static Value<Vector> Vector(@NotNull Vector value) {
-        return new Value<>(TYPE_VECTOR, value, writer -> {
+        return new Value<>(TYPE_ROTATION, value, writer -> {
             writer.writeFloat((float) value.getX());
             writer.writeFloat((float) value.getY());
             writer.writeFloat((float) value.getZ());
         });
     }
 
-    // Fake types which do not exist in the protocol
     public static Value<Component> Chat(@NotNull Component value) {
-        return new Value<>(TYPE_STRING, value, writer -> writer.writeSizedString(LegacyComponentSerializer.legacySection().serialize(value)));
+        return new Value<>(TYPE_CHAT, value, writer -> writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(value)));
     }
     public static Value<Boolean> Boolean(boolean value) {
         return new Value<>(TYPE_BYTE, value, writer -> writer.writeByte((byte) (value ? 1 : 0)));
     }
 
     public static final byte TYPE_BYTE = 0;
-    public static final byte TYPE_SHORT = 1;
-    public static final byte TYPE_INT = 2;
-    public static final byte TYPE_FLOAT = 3;
-    public static final byte TYPE_STRING = 4;
+    public static final byte TYPE_VARINT = 1;
+    public static final byte TYPE_FLOAT = 2;
+    public static final byte TYPE_STRING = 3;
+    public static final byte TYPE_CHAT = 4;
     public static final byte TYPE_SLOT = 5;
-    public static final byte TYPE_POSITION = 6;
-    public static final byte TYPE_VECTOR = 7;
+    public static final byte TYPE_BOOLEAN = 6;
+    public static final byte TYPE_ROTATION = 7;
+    public static final byte TYPE_POSITION = 8;
 
     private final Entity entity;
 
@@ -162,7 +161,8 @@ public class Metadata {
 
         @Override
         public void write(@NotNull BinaryWriter writer) {
-            writer.writeByte((byte) (((this.value.type << 5) | (index & 0x1F)) & 0xFF));
+            writer.writeByte(index);
+            writer.writeByte((byte) this.value.type);
             this.value.valueWriter.accept(writer);
         }
 

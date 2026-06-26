@@ -23,6 +23,7 @@ import net.minestom.server.utils.cache.TimedBuffer;
 import net.minestom.server.utils.validate.Check;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -44,7 +45,7 @@ public class NettyPlayerConnection extends PlayerConnection {
     private boolean encrypted = false;
     private boolean compressed = false;
 
-    //Could be null. Only used for Mojang Auth
+    // Could be null. Only used for Mojang Auth
     private byte[] nonce = new byte[4];
 
     // Data from client packets
@@ -52,7 +53,8 @@ public class NettyPlayerConnection extends PlayerConnection {
     private String serverAddress;
     private int serverPort;
 
-    // Used for the login plugin request packet, to retrieve the channel from a message id,
+    // Used for the login plugin request packet, to retrieve the channel from a
+    // message id,
     // cleared once the player enters the play state
     private final Map<Integer, String> pluginRequestMap = new ConcurrentHashMap<>();
 
@@ -84,7 +86,8 @@ public class NettyPlayerConnection extends PlayerConnection {
      * Sets the encryption key and add the codecs to the pipeline.
      *
      * @param secretKey the secret key to use in the encryption
-     * @throws IllegalStateException if encryption is already enabled for this connection
+     * @throws IllegalStateException if encryption is already enabled for this
+     *                               connection
      */
     public void setEncryptionKey(@NotNull SecretKey secretKey) {
         Check.stateCondition(encrypted, "Encryption is already enabled!");
@@ -98,7 +101,8 @@ public class NettyPlayerConnection extends PlayerConnection {
     /**
      * Enables compression and add a new codec to the pipeline.
      *
-     * @throws IllegalStateException if encryption is already enabled for this connection
+     * @throws IllegalStateException if encryption is already enabled for this
+     *                               connection
      */
     public void startCompression() {
         Check.stateCondition(compressed, "Compression is already enabled!");
@@ -114,7 +118,8 @@ public class NettyPlayerConnection extends PlayerConnection {
     /**
      * Writes a packet to the connection channel.
      * <p>
-     * All packets are flushed during {@link net.minestom.server.entity.Player#update(long)}.
+     * All packets are flushed during
+     * {@link net.minestom.server.entity.Player#update(long)}.
      *
      * @param serverPacket the packet to write
      */
@@ -122,7 +127,8 @@ public class NettyPlayerConnection extends PlayerConnection {
     public void sendPacket(@NotNull ServerPacket serverPacket) {
         if (!channel.isActive())
             return;
-
+        LoggerFactory.getLogger(NettyPlayerConnection.class).warn("id: " + Integer.toHexString(serverPacket.getId()),
+                serverPacket.getClass().toString());
         if (shouldSendPacket(serverPacket)) {
             if (getPlayer() != null) {
                 // Flush happen during #update()
@@ -321,24 +327,29 @@ public class NettyPlayerConnection extends PlayerConnection {
     /**
      * Adds an entry to the plugin request map.
      * <p>
-     * Only working if {@link #getConnectionState()} is {@link net.minestom.server.network.ConnectionState#LOGIN}.
+     * Only working if {@link #getConnectionState()} is
+     * {@link net.minestom.server.network.ConnectionState#LOGIN}.
      *
      * @param messageId the message id
      * @param channel   the packet channel
-     * @throws IllegalStateException if a messageId with the value {@code messageId} already exists for this connection
+     * @throws IllegalStateException if a messageId with the value {@code messageId}
+     *                               already exists for this connection
      */
     public void addPluginRequestEntry(int messageId, @NotNull String channel) {
         if (!getConnectionState().equals(ConnectionState.LOGIN)) {
             return;
         }
-        Check.stateCondition(pluginRequestMap.containsKey(messageId), "You cannot have two messageId with the same value");
+        Check.stateCondition(pluginRequestMap.containsKey(messageId),
+                "You cannot have two messageId with the same value");
         this.pluginRequestMap.put(messageId, channel);
     }
 
     /**
-     * Gets a request channel from a message id, previously cached using {@link #addPluginRequestEntry(int, String)}.
+     * Gets a request channel from a message id, previously cached using
+     * {@link #addPluginRequestEntry(int, String)}.
      * <p>
-     * Be aware that the internal map is cleared once the player enters the play state.
+     * Be aware that the internal map is cleared once the player enters the play
+     * state.
      *
      * @param messageId the message id
      * @return the channel linked to the message id, null if not found
@@ -358,7 +369,9 @@ public class NettyPlayerConnection extends PlayerConnection {
     }
 
     /**
-     * Used in {@link net.minestom.server.network.packet.client.handshake.HandshakePacket} to change the internal fields.
+     * Used in
+     * {@link net.minestom.server.network.packet.client.handshake.HandshakePacket}
+     * to change the internal fields.
      *
      * @param serverAddress the server address which the client used
      * @param serverPort    the server port which the client used
