@@ -2125,6 +2125,7 @@ public class Player extends LivingEntity implements CommandSender {
         private ChatMode chatMode;
         private boolean chatColors;
         private byte displayedSkinParts;
+        private int mainHand;
 
         private boolean firstRefresh = true;
 
@@ -2178,9 +2179,10 @@ public class Player extends LivingEntity implements CommandSender {
          * @param chatMode           the player chat mode
          * @param chatColors         the player chat colors
          * @param displayedSkinParts the player displayed skin parts
+         * @param mainHand           the player main hand (0=left, 1=right)
          */
         public void refresh(String locale, byte viewDistance, ChatMode chatMode, boolean chatColors,
-                            byte displayedSkinParts) {
+                            byte displayedSkinParts, int mainHand) {
 
             final boolean viewDistanceChanged = this.viewDistance != viewDistance;
 
@@ -2189,6 +2191,7 @@ public class Player extends LivingEntity implements CommandSender {
             this.chatMode = chatMode;
             this.chatColors = chatColors;
             this.displayedSkinParts = displayedSkinParts;
+            this.mainHand = mainHand;
 
             metadata.setIndex((byte) 12, Metadata.Byte(displayedSkinParts));
 
