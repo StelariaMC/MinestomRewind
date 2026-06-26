@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerMeta extends LivingEntityMeta {
 
-    private final static byte MASK_INDEX = 10;
+    private final static byte MASK_INDEX = 12;
 
     private final static byte CAPE_BIT = 0x01;
     private final static byte JACKET_BIT = 0x02;
@@ -21,19 +21,19 @@ public class PlayerMeta extends LivingEntityMeta {
     }
 
     public float getAdditionalHearts() {
-        return super.metadata.getIndex((byte) 17, 0F);
+        return super.metadata.getIndex((byte) 10, 0F);
     }
 
     public void setAdditionalHearts(float value) {
-        super.metadata.setIndex((byte) 17, Metadata.Float(value));
+        super.metadata.setIndex((byte) 10, Metadata.Float(value));
     }
 
     public int getScore() {
-        return super.metadata.getIndex((byte) 18, 0);
+        return super.metadata.getIndex((byte) 11, 0);
     }
 
     public void setScore(int value) {
-        super.metadata.setIndex((byte) 18, Metadata.Int(value));
+        super.metadata.setIndex((byte) 11, Metadata.Int(value));
     }
 
     public boolean isCapeEnabled() {
@@ -93,11 +93,11 @@ public class PlayerMeta extends LivingEntityMeta {
     }
 
     public boolean isRightMainHand() {
-        return super.metadata.getIndex((byte) 17, (byte) 1) == (byte) 1;
+        return super.metadata.getIndex((byte) 13, (byte) 1) == (byte) 1;
     }
 
     public void setRightMainHand(boolean value) {
-        super.metadata.setIndex((byte) 17, Metadata.Byte(value ? (byte) 1 : (byte) 0));
+        super.metadata.setIndex((byte) 13, Metadata.Byte(value ? (byte) 1 : (byte) 0));
     }
 
 }
