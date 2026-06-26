@@ -23,7 +23,7 @@ public class JoinGamePacket implements ServerPacket {
     public void write(@NotNull BinaryWriter writer) {
         writer.writeInt(entityId);
         writer.writeByte((byte) (gameMode.getId() | (gameMode.isHardcore() ? 0x08 : 0x0)));
-        writer.writeByte(dimensionType.getId());
+        writer.writeInt(dimensionType.getId());
         writer.writeByte(difficulty.getId());
         writer.writeByte((byte) maxPlayers);
         writer.writeSizedString(levelType.getId());

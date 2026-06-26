@@ -11,7 +11,6 @@ public class PlayerPositionAndLookPacket implements ServerPacket {
     public Position position;
     public byte flags;
 
-
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeDouble(position.getX());
@@ -22,6 +21,7 @@ public class PlayerPositionAndLookPacket implements ServerPacket {
         writer.writeFloat(position.getPitch());
 
         writer.writeByte(flags);
+        writer.writeVarInt(1); // TODO set a random teleport ID
     }
 
     @Override

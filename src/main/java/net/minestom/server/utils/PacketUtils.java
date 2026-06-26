@@ -19,7 +19,8 @@ import java.util.Collection;
 import java.util.zip.Deflater;
 
 /**
- * Utils class for packets. Including writing a {@link ServerPacket} into a {@link ByteBuf}
+ * Utils class for packets. Including writing a {@link ServerPacket} into a
+ * {@link ByteBuf}
  * for network processing.
  */
 public final class PacketUtils {
@@ -34,14 +35,16 @@ public final class PacketUtils {
     /**
      * Sends a {@link ServerPacket} to multiple players.
      * <p>
-     * Can drastically improve performance since the packet will not have to be processed as much.
+     * Can drastically improve performance since the packet will not have to be
+     * processed as much.
      *
      * @param players         the players to send the packet to
      * @param packet          the packet to send to the players
-     * @param playerValidator optional callback to check if a specify player of {@code players} should receive the packet
+     * @param playerValidator optional callback to check if a specify player of
+     *                        {@code players} should receive the packet
      */
     public static void sendGroupedPacket(@NotNull Collection<Player> players, @NotNull ServerPacket packet,
-                                         @Nullable PlayerValidator playerValidator) {
+            @Nullable PlayerValidator playerValidator) {
         if (players.isEmpty())
             return;
 
@@ -154,7 +157,7 @@ public final class PacketUtils {
     private static ByteBuf getPacketBuffer(@NotNull ServerPacket packet) {
         BinaryWriter writer;
         if (packet.getId() == ServerPacketIdentifier.CHUNK_DATA) {
-            writer = new BinaryWriter(BufUtils.getBuffer(true, 40_000));
+            writer = new BinaryWriter(BufUtils.getBuffer(true, 200_000));
         } else {
             writer = new BinaryWriter(BufUtils.getBuffer(true));
         }
@@ -171,11 +174,16 @@ public final class PacketUtils {
     /**
      * Frames a buffer for it to be understood by a Minecraft client.
      * <p>
-     * The content of {@code packetBuffer} can be either a compressed or uncompressed packet buffer,
-     * it depends of it the client did receive a {@link net.minestom.server.network.packet.server.login.SetCompressionPacket} packet before.
+     * The content of {@code packetBuffer} can be either a compressed or
+     * uncompressed packet buffer,
+     * it depends of it the client did receive a
+     * {@link net.minestom.server.network.packet.server.login.SetCompressionPacket}
+     * packet before.
      *
-     * @param packetBuffer the buffer containing compressed or uncompressed packet data
-     * @param frameTarget  the buffer which will receive the framed version of {@code from}
+     * @param packetBuffer the buffer containing compressed or uncompressed packet
+     *                     data
+     * @param frameTarget  the buffer which will receive the framed version of
+     *                     {@code from}
      */
     public static void frameBuffer(@NotNull ByteBuf packetBuffer, @NotNull ByteBuf frameTarget) {
         final int packetSize = packetBuffer.readableBytes();
@@ -194,16 +202,20 @@ public final class PacketUtils {
     /**
      * Compress using zlib the content of a packet.
      * <p>
-     * {@code packetBuffer} needs to be the packet content without any header (if you want to use it to write a Minecraft packet).
+     * {@code packetBuffer} needs to be the packet content without any header (if
+     * you want to use it to write a Minecraft packet).
      *
      * @param deflater          the deflater for zlib compression
-     * @param buffer            a cached buffer which will be used to store temporary the deflater output,
-     *                          null if you prefer the buffer to be allocated dynamically when required
+     * @param buffer            a cached buffer which will be used to store
+     *                          temporary the deflater output,
+     *                          null if you prefer the buffer to be allocated
+     *                          dynamically when required
      * @param packetBuffer      the buffer containing all the packet fields
-     * @param compressionTarget the buffer which will receive the compressed version of {@code packetBuffer}
+     * @param compressionTarget the buffer which will receive the compressed version
+     *                          of {@code packetBuffer}
      */
     public static void compressBuffer(@NotNull Deflater deflater, @Nullable byte[] buffer,
-                                      @NotNull ByteBuf packetBuffer, @NotNull ByteBuf compressionTarget) {
+            @NotNull ByteBuf packetBuffer, @NotNull ByteBuf compressionTarget) {
         final int packetLength = packetBuffer.readableBytes();
 
         if (packetLength < MinecraftServer.getCompressionThreshold()) {
@@ -229,11 +241,14 @@ public final class PacketUtils {
     }
 
     /**
-     * Creates a "framed packet" (packet which can be send and understood by a Minecraft client)
+     * Creates a "framed packet" (packet which can be send and understood by a
+     * Minecraft client)
      * from a server packet.
      * <p>
-     * Can be used if you want to store a raw buffer and send it later without the additional writing cost.
-     * Compression is applied if {@link MinecraftServer#getCompressionThreshold()} is greater than 0.
+     * Can be used if you want to store a raw buffer and send it later without the
+     * additional writing cost.
+     * Compression is applied if {@link MinecraftServer#getCompressionThreshold()}
+     * is greater than 0.
      *
      * @param serverPacket the server packet to write
      * @return the framed packet from the server one
