@@ -11,6 +11,7 @@ import java.util.UUID;
 public class SpawnObjectPacket implements ServerPacket {
 
     public int entityId;
+    public UUID uuid;
     public byte type;
     public Position position;
     public int data;
@@ -19,11 +20,12 @@ public class SpawnObjectPacket implements ServerPacket {
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
+        writer.writeUuid(uuid);
         writer.writeByte(type);
 
-        writer.writeInt((int) (position.getX() * 32.0));
-        writer.writeInt((int) (position.getY() * 32.0));
-        writer.writeInt((int) (position.getZ() * 32.0));
+        writer.writeDouble(position.getX());
+        writer.writeDouble(position.getY());
+        writer.writeDouble(position.getZ());
 
         writer.writeByte((byte) (position.getPitch() * 256 / 360));
         writer.writeByte((byte) (position.getYaw() * 256 / 360));
