@@ -15,10 +15,9 @@ public class EntityTeleportPacket implements ServerPacket {
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
-        // Fixed point numbers
-        writer.writeInt((int)(position.getX() * 32));
-        writer.writeInt((int)(position.getY() * 32));
-        writer.writeInt((int)(position.getZ() * 32));
+        writer.writeDouble(position.getX());
+        writer.writeDouble(position.getY());
+        writer.writeDouble(position.getZ());
         writer.writeByte((byte) (position.getYaw() * 256f / 360f));
         writer.writeByte((byte) (position.getPitch() * 256f / 360f));
         writer.writeBoolean(onGround);

@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 public class EntityRelativeMovePacket implements ServerPacket {
 
     public int entityId;
-    public byte deltaX, deltaY, deltaZ;
+    public short deltaX, deltaY, deltaZ;
     public boolean onGround;
 
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
-        writer.writeByte(deltaX);
-        writer.writeByte(deltaY);
-        writer.writeByte(deltaZ);
+        writer.writeShort(deltaX);
+        writer.writeShort(deltaY);
+        writer.writeShort(deltaZ);
         writer.writeBoolean(onGround);
     }
 
@@ -40,10 +40,10 @@ public class EntityRelativeMovePacket implements ServerPacket {
         return entityRelativeMovePacket;
     }
 
-    public static byte getRelativeMove(double newCoord, double oldCoord) {
+    public static short getRelativeMove(double newCoord, double oldCoord) {
         int newFixedPoint = (int) (newCoord * 32.0);
         int oldFixedPoint = (int) (oldCoord * 32.0);
 
-        return (byte) (newFixedPoint - oldFixedPoint);
+        return (short) (newFixedPoint - oldFixedPoint);
     }
 }

@@ -9,16 +9,16 @@ import org.jetbrains.annotations.NotNull;
 public class EntityLookAndRelativeMove implements ServerPacket {
 
     public int entityId;
-    public byte deltaX, deltaY, deltaZ;
+    public short deltaX, deltaY, deltaZ;
     public float yaw, pitch;
     public boolean onGround;
 
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
-        writer.writeByte(deltaX);
-        writer.writeByte(deltaY);
-        writer.writeByte(deltaZ);
+        writer.writeShort(deltaX);
+        writer.writeShort(deltaY);
+        writer.writeShort(deltaZ);
         writer.writeByte((byte) (yaw * 256 / 360));
         writer.writeByte((byte) (pitch * 256 / 360));
         writer.writeBoolean(onGround);
