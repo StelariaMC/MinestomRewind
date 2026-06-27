@@ -15,20 +15,17 @@ public class SpawnPlayerPacket implements ServerPacket {
     public int entityId;
     public UUID playerUuid;
     public Position position;
-    public short heldItem;
     public Collection<Metadata.Entry<?>> metadataEntries;
 
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
         writer.writeUuid(playerUuid);
-        // Fixed point numbers
-        writer.writeInt((int)(position.getX() * 32));
-        writer.writeInt((int)(position.getY() * 32));
-        writer.writeInt((int)(position.getZ() * 32));
+        writer.writeDouble(position.getX());
+        writer.writeDouble(position.getY());
+        writer.writeDouble(position.getZ());
         writer.writeByte((byte) (position.getYaw() * 256f / 360f));
         writer.writeByte((byte) (position.getPitch() * 256f / 360f));
-        writer.writeShort(heldItem);
 
         // Write all the fields
         for (Metadata.Entry<?> entry : metadataEntries) {

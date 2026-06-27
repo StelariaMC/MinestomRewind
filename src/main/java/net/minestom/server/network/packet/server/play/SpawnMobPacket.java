@@ -13,6 +13,7 @@ import java.util.UUID;
 public class SpawnMobPacket implements ServerPacket {
 
     public int entityId;
+    public UUID uuid;
     public byte entityType;
     public Position position;
     public float headPitch;
@@ -22,11 +23,12 @@ public class SpawnMobPacket implements ServerPacket {
     @Override
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
+        writer.writeUuid(uuid);
         writer.writeByte(entityType);
 
-        writer.writeInt((int) (position.getX() * 32.0));
-        writer.writeInt((int) (position.getY() * 32.0));
-        writer.writeInt((int) (position.getZ() * 32.0));
+        writer.writeDouble(position.getX());
+        writer.writeDouble(position.getY());
+        writer.writeDouble(position.getZ());
 
         writer.writeByte((byte) (position.getYaw() * 256 / 360));
         writer.writeByte((byte) (position.getPitch() * 256 / 360));

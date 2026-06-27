@@ -35,6 +35,7 @@ public enum EntitySpawnType {
         public ServerPacket getSpawnPacket(Entity entity) {
             SpawnMobPacket packet = new SpawnMobPacket();
             packet.entityId = entity.getEntityId();
+            packet.uuid = entity.getUuid();
             packet.entityType = entity.getEntityType().getProtocolId();
             packet.position = entity.getPosition();
             packet.headPitch = entity.getPosition().getPitch();
@@ -53,11 +54,6 @@ public enum EntitySpawnType {
             packet.entityId = entity.getEntityId();
             packet.playerUuid = entity.getUuid();
             packet.position = entity.getPosition();
-            byte heldItem = 0;
-            if (entity instanceof Player) {
-                heldItem = ((Player) entity).getHeldSlot();
-            }
-            packet.heldItem = heldItem;
             packet.metadataEntries = entity.getMetadata().getEntries();
             return packet;
         }
