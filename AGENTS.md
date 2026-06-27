@@ -99,10 +99,11 @@ Fichiers modifiés :
 ### EntityRelativeMovePacket (0x25) — adapté pour 1.9.4
 
 - DeltaX/Y/Z : `writeByte(delta)` → `writeShort(delta)`
+- **Précision des deltas :** `* 32.0` → `* 4096.0` (le format 1.9.4 utilise des shorts en 1/4096e de bloc, pas 1/32 comme en 1.8)
 
 ### EntityLookAndRelativeMove (0x26) — adapté pour 1.9.4
 
-- DeltaX/Y/Z : `writeByte(delta)` → `writeShort(delta)`
+- DeltaX/Y/Z : `writeByte(delta)` → `writeShort(delta)` (utilise `getRelativeMove()` → corrigé avec 4096)
 
 ### SpawnObjectPacket (0x00) — adapté pour 1.9.4
 
@@ -180,6 +181,10 @@ ServerPacket.write(writer)
 - [wiki.vg — Protocol 1.9.4](https://wiki.vg/index.php?title=Protocol&oldid=14044)
 - Le packet `data/1.8.json` contient des données d'achievements 1.8 (legacy)
 - `prismarine-minecraft-data/` est un sous-module avec des données mincraft
+- **Paper 1.9.4 (NMS) :** `/home/mathip/dev/java/AZPaper/work/1.9.4/net/minecraft/server/`
+  - `PacketPlayOutEntity.java` — sérialisation des packets de mouvement
+  - `EntityTrackerEntry.java` — décision relative move vs teleport (deltas en 1/4096, seuil ±32768)
+  - `EntityTracker.java` — conversion `MathHelper.d(loc * 4096.0)`
 
 ## Commandes utiles
 

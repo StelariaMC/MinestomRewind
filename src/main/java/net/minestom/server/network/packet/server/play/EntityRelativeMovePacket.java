@@ -28,8 +28,8 @@ public class EntityRelativeMovePacket implements ServerPacket {
 
     @NotNull
     public static EntityRelativeMovePacket getPacket(int entityId,
-                                                     @NotNull Position newPosition, @NotNull Position oldPosition,
-                                                     boolean onGround) {
+            @NotNull Position newPosition, @NotNull Position oldPosition,
+            boolean onGround) {
         EntityRelativeMovePacket entityRelativeMovePacket = new EntityRelativeMovePacket();
         entityRelativeMovePacket.entityId = entityId;
         entityRelativeMovePacket.deltaX = getRelativeMove(newPosition.getX(), oldPosition.getX());
@@ -41,8 +41,8 @@ public class EntityRelativeMovePacket implements ServerPacket {
     }
 
     public static short getRelativeMove(double newCoord, double oldCoord) {
-        int newFixedPoint = (int) (newCoord * 32.0);
-        int oldFixedPoint = (int) (oldCoord * 32.0);
+        int newFixedPoint = (int) (newCoord * 4096.0);
+        int oldFixedPoint = (int) (oldCoord * 4096.0);
 
         return (short) (newFixedPoint - oldFixedPoint);
     }
