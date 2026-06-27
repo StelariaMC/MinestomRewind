@@ -74,7 +74,7 @@ public class EntityArmorStand extends ObjectEntity implements EquipmentHandler {
     @Override
     public void setItemInHand(@NotNull ItemStack itemStack) {
         this.mainHandItem = itemStack;
-        syncEquipment(EntityEquipmentPacket.Slot.HAND);
+        syncEquipment(EntityEquipmentPacket.Slot.MAIN_HAND);
     }
 
     @NotNull

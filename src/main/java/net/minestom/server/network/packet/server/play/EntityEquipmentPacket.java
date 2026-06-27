@@ -17,9 +17,7 @@ public class EntityEquipmentPacket implements ServerPacket {
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(entityId);
 
-        short slotEnum = (short) slot.ordinal();
-
-        writer.writeShort(slotEnum);
+        writer.writeVarInt(slot.ordinal());
         writer.writeItemStack(itemStack);
     }
 
@@ -29,7 +27,8 @@ public class EntityEquipmentPacket implements ServerPacket {
     }
 
     public enum Slot {
-        HAND,
+        MAIN_HAND,
+        OFF_HAND,
         BOOTS,
         LEGGINGS,
         CHESTPLATE,

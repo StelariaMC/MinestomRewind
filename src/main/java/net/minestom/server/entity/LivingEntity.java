@@ -129,7 +129,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     @Override
     public void setItemInHand(@NotNull ItemStack itemStack) {
         this.handItem = itemStack;
-        syncEquipment(EntityEquipmentPacket.Slot.HAND);
+        syncEquipment(EntityEquipmentPacket.Slot.MAIN_HAND);
     }
 
     @NotNull

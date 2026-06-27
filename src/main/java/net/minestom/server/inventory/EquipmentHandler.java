@@ -98,8 +98,10 @@ public interface EquipmentHandler {
     @NotNull
     default ItemStack getEquipment(@NotNull EntityEquipmentPacket.Slot slot) {
         switch (slot) {
-            case HAND:
+            case MAIN_HAND:
                 return getItemInHand();
+            case OFF_HAND:
+                return ItemStack.getAirItem();
             case HELMET:
                 return getHelmet();
             case CHESTPLATE:

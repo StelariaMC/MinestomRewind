@@ -260,7 +260,7 @@ public class PlayerInventory implements InventoryModifier, InventoryClickHandler
         EntityEquipmentPacket.Slot equipmentSlot;
 
         if (slot == player.getHeldSlot()) {
-            equipmentSlot = EntityEquipmentPacket.Slot.HAND;
+            equipmentSlot = EntityEquipmentPacket.Slot.MAIN_HAND;
         } else {
             ArmorEquipEvent armorEquipEvent = null;
 

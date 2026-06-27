@@ -1892,7 +1892,7 @@ public class Player extends LivingEntity implements CommandSender {
      */
     public void refreshHeldSlot(byte slot) {
         this.heldSlot = slot;
-        syncEquipment(EntityEquipmentPacket.Slot.HAND);
+        syncEquipment(EntityEquipmentPacket.Slot.MAIN_HAND);
 
         refreshEating(false);
     }
