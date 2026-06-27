@@ -52,6 +52,63 @@ Fichiers modifiés :
 
 Le stockage interne (`Section.short[] blocks`, `PaletteStorage`) est inchangé ; la conversion vers le format palette se fait à la volée dans `ChunkDataPacket.writeSection()`.
 
+### Metadata — adapté pour 1.9.4
+
+Fichiers modifiés :
+- `Metadata.java` — Types corrigés pour 1.9.4 (TYPE_VARINT=1, TYPE_CHAT=4, TYPE_BOOLEAN=6, TYPE_ROTATION=7, TYPE_POSITION=8) ; Chat sérialisé en JSON via Adventure
+- `EntityMetaDataPacket.java` — Terminaison `0xFF` au lieu de `0x7F`
+- `SpawnPlayerPacket.java` — Terminaison `0xFF`
+- `SpawnMobPacket.java` — Terminaison `0xFF`
+- `PlayerMeta.java` — Indices corrigés pour 1.9.4
+
+### EntityEquipmentPacket (0x3C) — adapté pour 1.9.4
+
+- Slot passe de `writeShort` à `writeVarInt`
+- Enum réorganisé : `MAIN_HAND(0), OFF_HAND(1), BOOTS(2), LEGGINGS(3), CHESTPLATE(4), HELMET(5)`
+- `EquipmentHandler.java` : ajout du cas `OFF_HAND`
+
+### writeItemStack (NBTUtils) — format 1.9.4 (confirmé)
+
+- Slot vide : `writeShort(-1)` (pas Boolean)
+- Slot présent : `writeShort(itemId)` + `writeByte(count)` + `writeShort(damage)` + NBT optionnel
+- Le format Boolean+VarInt (1.13+) avait été appliqué puis reverté
+
+### SpawnPlayerPacket (0x05) — adapté pour 1.9.4
+
+- Position : `writeInt(x*32)` → `writeDouble(x)` (Decimal au lieu de fixed-point)
+
+### SpawnMobPacket (0x0C) — adapté pour 1.9.4
+
+- Ajout du champ `UUID`
+- `writeByte(entityType)` conservé (u8 en 1.9.4, pas VarInt)
+- Position : `writeInt(x*32)` → `writeDouble(x)`
+
+### ClientUseItemPacket (0x1D) — ajouté
+
+- Nouveau packet pour gérer le clic droit avec un item
+- Listener `UseItemListener.java` enregistré
+
+### ClientSettingsPacket (0x04) — adapté pour 1.9.4
+
+- Ajout du champ `mainHand` (VarInt) — résout "Packet 0x4 not fully read"
+
+### EntityTeleportPacket (0x49) — adapté pour 1.9.4
+
+- Position : `writeInt(x*32)` → `writeDouble(x)` (résout la déconnexion des joueurs au join)
+
+### EntityRelativeMovePacket (0x25) — adapté pour 1.9.4
+
+- DeltaX/Y/Z : `writeByte(delta)` → `writeShort(delta)`
+
+### EntityLookAndRelativeMove (0x26) — adapté pour 1.9.4
+
+- DeltaX/Y/Z : `writeByte(delta)` → `writeShort(delta)`
+
+### SpawnObjectPacket (0x00) — adapté pour 1.9.4
+
+- Ajout du champ `UUID`
+- Position : `writeInt(x*32)` → `writeDouble(x)`
+
 ## Prochains packets à vérifier/adapter pour 1.9.4
 
 ### Prioritaires (problèmes potentiels identifiés)
@@ -60,13 +117,11 @@ Le stockage interne (`Section.short[] blocks`, `PaletteStorage`) est inchangé ;
 |--------|---------|----------|
 | **JoinGamePacket** (0x23) | `network/packet/server/play/JoinGamePacket.java` | Vérifier la structure 1.9.4 (difficulté, gamemode, dimension, etc.) |
 | **RespawnPacket** (0x33) | `network/packet/server/play/RespawnPacket.java` | Vérifier la structure 1.9.4 |
-| **PlayerPositionAndLookPacket** (0x2E) | `network/packet/server/play/PlayerPositionAndLookPacket.java` | Hardcode `writeVarInt(1)` au lieu d'un téléport ID aléatoire |
-| **StatisticsPacket** (0x07) | `network/packet/server/play/StatisticsPacket.java` | Utilise un format `String name + int value` — en 1.9.4 c'est `VarInt category + VarInt id + int value` |
-| **EntityEquipmentPacket** (0x3C) | `network/packet/server/play/EntityEquipmentPacket.java` | Pas de slot `OFF_HAND` (1.9.4 : 0=main, 1=offhand, 2-5=armure) |
-| **EntityAnimationPacket** (0x06) | `network/packet/server/play/EntityAnimationPacket.java` | Pas de `SWING_OFF_HAND` (id 3 en 1.9.4) |
-| **ScoreboardObjectivePacket** (0x3F) | `network/packet/server/play/ScoreboardObjectivePacket.java` | Le format du type a changé (string "integer"/"hearts" au lieu d'un int) |
+| **StatisticsPacket** (0x07) | `network/packet/server/play/StatisticsPacket.java` | Utilise `String name + int value` — en 1.9.4 c'est `VarInt category + VarInt id + int value` |
+| **ScoreboardObjectivePacket** (0x3F) | `network/packet/server/play/ScoreboardObjectivePacket.java` | Le type a changé (string "integer"/"hearts" au lieu d'un int) |
 | **TitlePacket** (0x45) | `network/packet/server/play/TitlePacket.java` | Vérifier les actions (VarInt en 1.9.4) |
-| **CombatEventPacket** (0x2C) | `network/packet/server/play/CombatEventPacket.java` | Implémentation incomplète (seul DEATH est supporté) |
+| **CombatEventPacket** (0x2C) | `network/packet/server/play/CombatEventPacket.java` | Implémentation incomplète (seul DEATH supporté) |
+| **SoundEffectPacket** (0x46) | `network/packet/server/play/SoundEffectPacket.java` | Vérifier format 1.9.4 |
 
 ### Client play packets IDs à vérifier
 
@@ -80,7 +135,7 @@ Le stockage interne (`Section.short[] blocks`, `PaletteStorage`) est inchangé ;
 - **BossBar** : Le packet BossBar (0x0C) n'existe pas dans ce projet mais est optionnel
 - **MapDataPacket (0x24)** : Vérifier le format 1.9.4
 - **PluginMessagePacket (0x18)** : Vérifier le format 1.9.4
-- **SoundEffectPacket (0x46)** : Vérifier le format 1.9.4
+- **readItemStack (BinaryReader)** : Format 1.9.4 probablement non adapté pour la réception
 
 ## Architecture clé
 
