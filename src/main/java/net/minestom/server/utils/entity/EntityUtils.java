@@ -19,8 +19,8 @@ public final class EntityUtils {
     }
 
     public static void forEachRange(@NotNull Instance instance, @NotNull Position position,
-                                    int viewDistance,
-                                    @NotNull Consumer<Entity> consumer) {
+            int viewDistance,
+            @NotNull Consumer<Entity> consumer) {
         final long[] chunksInRange = ChunkUtils.getChunksInRange(position, viewDistance);
 
         for (long chunkIndex : chunksInRange) {
@@ -41,7 +41,8 @@ public final class EntityUtils {
 
         final Chunk chunk = ent1.getInstance().getChunkAt(ent1.getPosition());
 
-        final long[] visibleChunksEntity = ChunkUtils.getChunksInRange(ent2.getPosition(), MinecraftServer.getEntityViewDistance());
+        final long[] visibleChunksEntity = ChunkUtils.getChunksInRange(ent2.getPosition(),
+                MinecraftServer.getEntityViewDistance());
         for (long visibleChunk : visibleChunksEntity) {
             final int chunkX = ChunkUtils.getChunkCoordX(visibleChunk);
             final int chunkZ = ChunkUtils.getChunkCoordZ(visibleChunk);

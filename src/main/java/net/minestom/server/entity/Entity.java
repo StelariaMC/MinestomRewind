@@ -344,6 +344,18 @@ public class Entity implements Viewable, EventHandler, DataContainer, Permission
         if (!this.viewers.add(player)) {
             return false;
         }
+
+        // Defensive: if the player hasn't loaded this entity's chunk, sending
+        // the spawn packet before the chunk data would make the entity invisible.
+        final Instance instance = getInstance();
+        if (instance != null) {
+            final Chunk entityChunk = instance.getChunkAt(getPosition());
+            if (entityChunk != null && !player.getViewableChunks().contains(entityChunk)) {
+                this.viewers.remove(player);
+                return false;
+            }
+        }
+
         player.viewableEntities.add(this);
 
         PlayerConnection playerConnection = player.getPlayerConnection();

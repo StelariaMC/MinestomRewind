@@ -4,6 +4,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.Viewable;
 import net.minestom.server.data.Data;
 import net.minestom.server.data.DataContainer;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.pathfinding.PFColumnarSpace;
 import net.minestom.server.event.player.PlayerChunkLoadEvent;
@@ -422,13 +423,30 @@ public abstract class Chunk implements Viewable, DataContainer {
     public boolean addViewer(@NotNull Player player) {
         final boolean result = this.viewers.add(player);
 
-        // Add to the viewable chunks set
-        player.getViewableChunks().add(this);
-
-        // Send the chunk data & light packets to the player
+        // Send the chunk data & light packets to the player FIRST
+        // so that any entity packet sent after this arrives after the chunk data.
         sendChunk(player);
 
+        // Add to the viewable chunks set (after sendChunk so that
+        // concurrent UNSAFE_addEntity checks find the chunk loaded
+        // only after the client has received the chunk data)
+        player.getViewableChunks().add(this);
+
         if (result) {
+            // Send entities in this chunk to the player
+            final Instance instance = player.getInstance();
+            if (instance != null) {
+                for (Entity entity : instance.getChunkEntities(this)) {
+                    if (entity == player) continue;
+                    if (entity.isAutoViewable() && !entity.getViewers().contains(player)) {
+                        entity.addViewer(player);
+                    }
+                    if (entity instanceof Player && player.isAutoViewable() && !player.getViewers().contains(entity)) {
+                        player.addViewer((Player) entity);
+                    }
+                }
+            }
+
             PlayerChunkLoadEvent playerChunkLoadEvent = new PlayerChunkLoadEvent(player, chunkX, chunkZ);
             player.callEvent(PlayerChunkLoadEvent.class, playerChunkLoadEvent);
         }

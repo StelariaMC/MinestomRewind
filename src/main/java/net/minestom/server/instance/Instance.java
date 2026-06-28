@@ -892,16 +892,29 @@ public abstract class Instance implements BlockModifier, EventHandler, DataConta
         AddEntityToInstanceEvent event = new AddEntityToInstanceEvent(this, entity);
         callCancellableEvent(AddEntityToInstanceEvent.class, event, () -> {
             final Position entityPosition = entity.getPosition();
+            final Chunk entityChunk = getChunkAt(entityPosition);
 
-            // Send all visible entities
-            EntityUtils.forEachRange(this, entityPosition, MinecraftServer.getEntityViewDistance(), ent -> {
-                if (ent instanceof Player) {
-                    if (entity.isAutoViewable())
-                        entity.addViewer((Player) ent);
-                }
-            });
+            // Send entity to players who have the entity's chunk loaded
+            // and are within their own entity view distance
+            if (entity.isAutoViewable() && entityChunk != null) {
+                EntityUtils.forEachRange(this, entityPosition, MinecraftServer.getEntityViewDistance(), ent -> {
+                    if (ent instanceof Player) {
+                        final Player player = (Player) ent;
+                        if (player.getViewableChunks().contains(entityChunk)) {
+                            final Chunk playerChunk = player.getChunk();
+                            if (playerChunk != null) {
+                                final int chunkDistX = Math.abs(entityChunk.getChunkX() - playerChunk.getChunkX());
+                                final int chunkDistZ = Math.abs(entityChunk.getChunkZ() - playerChunk.getChunkZ());
+                                if (Math.max(chunkDistX, chunkDistZ) <= player.getEntitiesRange()) {
+                                    entity.addViewer(player);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
 
-            final Chunk chunk = getChunkAt(entityPosition);
+            final Chunk chunk = entityChunk != null ? entityChunk : getChunkAt(entityPosition);
             Check.notNull(chunk, "You tried to spawn an entity in an unloaded chunk, " + entityPosition);
             addEntityToChunk(entity, chunk);
         });
