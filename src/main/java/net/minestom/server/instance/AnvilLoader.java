@@ -104,14 +104,44 @@ public class AnvilLoader implements IChunkLoader {
     @Nullable
     private ChunkColumn readChunkColumn(@NotNull RegionFile mcaFile, int chunkX, int chunkZ)
             throws IOException {
+        ChunkColumn column = null;
         try {
-            return mcaFile.getChunk(chunkX, chunkZ);
+            column = mcaFile.getChunk(chunkX, chunkZ);
         } catch (AnvilException e) {
-            if (e.getMessage() != null && e.getMessage().contains("DataVersion")) {
+            if (e.getMessage() != null &&
+                    (e.getMessage().contains("DataVersion") || e.getMessage().contains("Status"))) {
                 return readChunkColumnRaw(chunkX, chunkZ);
             }
             return null;
         }
+
+        if (column == null)
+            return null;
+
+        // If all sections are empty, the chunk may be in old pre-1.13 format
+        // (Blocks[]/Data[] arrays) which Hephaistos doesn't parse.
+        // Try the raw reader which calls populateOldBlocks() as fallback.
+        boolean hasBlocks = false;
+        for (ChunkSection section : column.getSections()) {
+            if (!section.getEmpty()) {
+                hasBlocks = true;
+                break;
+            }
+        }
+
+        if (!hasBlocks) {
+            try {
+                mcaFile.forget(column);
+            } catch (IllegalArgumentException ignored) {
+            }
+
+            ChunkColumn rawColumn = readChunkColumnRaw(chunkX, chunkZ);
+            if (rawColumn != null) {
+                return rawColumn;
+            }
+        }
+
+        return column;
     }
 
     @Nullable
