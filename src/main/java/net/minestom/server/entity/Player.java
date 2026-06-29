@@ -756,7 +756,7 @@ public class Player extends LivingEntity implements CommandSender {
 
         TitlePacket subtitlePacket = new TitlePacket();
         subtitlePacket.action = TitlePacket.Action.SET_SUBTITLE;
-        subtitlePacket.titleText = title.subtitle();
+        subtitlePacket.subtitleText = title.subtitle();
         playerConnection.sendPacket(subtitlePacket);
 
         Title.Times times = title.times();

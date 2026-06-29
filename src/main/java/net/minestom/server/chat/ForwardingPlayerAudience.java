@@ -68,7 +68,7 @@ public interface ForwardingPlayerAudience extends ForwardingAudience {
 
         TitlePacket subtitlePacket = new TitlePacket();
         subtitlePacket.action = TitlePacket.Action.SET_SUBTITLE;
-        subtitlePacket.titleText = title.subtitle();
+        subtitlePacket.subtitleText = title.subtitle();
         PacketUtils.sendGroupedPacket(players(), subtitlePacket);
 
         Title.Times times = title.times();

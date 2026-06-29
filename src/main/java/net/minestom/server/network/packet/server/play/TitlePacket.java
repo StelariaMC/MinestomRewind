@@ -25,10 +25,10 @@ public class TitlePacket implements ServerPacket {
 
         switch (action) {
             case SET_TITLE:
-                writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(titleText));
+                writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(titleText != null ? titleText : Component.empty()));
                 break;
             case SET_SUBTITLE:
-                writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(subtitleText));
+                writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(subtitleText != null ? subtitleText : Component.empty()));
                 break;
             case SET_TIMES_AND_DISPLAY:
                 writer.writeInt(fadeIn);
