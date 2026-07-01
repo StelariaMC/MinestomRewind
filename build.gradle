@@ -108,6 +108,14 @@ tasks.withType(Jar).configureEach {
 shadowJar {
     mergeServiceFiles()
     archiveClassifier.set('')
+
+    // Keep only linux64 glibc native lib for rocksdb (saves ~90 MB)
+    exclude 'librocksdbjni-linux32*'
+    exclude 'librocksdbjni-linux64-musl*'
+    exclude 'librocksdbjni-linux-aarch*'
+    exclude 'librocksdbjni-linux-ppc*'
+    exclude 'librocksdbjni-osx*'
+    exclude 'librocksdbjni-win*'
 }
 
 tasks.named('jar') {
