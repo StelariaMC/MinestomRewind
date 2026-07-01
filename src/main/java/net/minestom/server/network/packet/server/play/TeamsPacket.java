@@ -1,7 +1,6 @@
 package net.minestom.server.network.packet.server.play;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.ServerPacketIdentifier;
@@ -35,9 +34,13 @@ public class TeamsPacket implements ServerPacket {
      */
     public NameTagVisibility nameTagVisibility;
     /**
-     * The color of the team
+     * Collision rule for the team
      */
-    public NamedTextColor teamColor;
+    public CollisionRule collisionRule;
+    /**
+     * The color of the team (chat color index 0-15)
+     */
+    public int teamColor;
     /**
      * The prefix of the team
      */
@@ -69,7 +72,8 @@ public class TeamsPacket implements ServerPacket {
                 writer.writeSizedString(LegacyComponentSerializer.legacySection().serialize(this.teamSuffix));
                 writer.writeByte(this.friendlyFlags);
                 writer.writeSizedString(this.nameTagVisibility.getIdentifier());
-                writer.writeByte((byte)this.teamColor.value());
+                writer.writeSizedString(this.collisionRule.getIdentifier());
+                writer.writeByte((byte) this.teamColor);
                 break;
             case REMOVE_TEAM:
 
@@ -120,6 +124,27 @@ public class TeamsPacket implements ServerPacket {
          * An action to remove player from the team
          */
         REMOVE_PLAYERS_TEAM
+    }
+
+    /**
+     * An enumeration which representing all collision rules
+     */
+    public enum CollisionRule {
+        ALWAYS("always"),
+        NEVER("never"),
+        HIDE_FOR_OTHER_TEAMS("pushOtherTeams"),
+        HIDE_FOR_OWN_TEAM("pushOwnTeam");
+
+        private final String identifier;
+
+        CollisionRule(String identifier) {
+            this.identifier = identifier;
+        }
+
+        @NotNull
+        public String getIdentifier() {
+            return identifier;
+        }
     }
 
     /**

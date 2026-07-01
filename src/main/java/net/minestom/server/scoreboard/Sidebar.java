@@ -2,7 +2,7 @@ package net.minestom.server.scoreboard;
 
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minestom.server.chat.ChatParser;
 import net.minestom.server.entity.Player;
 import net.minestom.server.network.packet.server.play.DisplayScoreboardPacket;
@@ -308,7 +308,7 @@ public class Sidebar implements Scoreboard {
          * Creates a new {@link SidebarTeam}
          */
         private void createTeam() {
-            this.entityName = ChatParser.COLOR_CHAR + Integer.toHexString(colorName);
+            this.entityName = ChatParser.COLOR_CHAR + Integer.toHexString(colorName) + ChatParser.COLOR_CHAR + "r";
 
             this.sidebarTeam = new SidebarTeam(teamName, content, Component.text(""), entityName);
         }
@@ -384,7 +384,8 @@ public class Sidebar implements Scoreboard {
         private final Component teamDisplayName = Component.text("displaynametest");
         private final byte friendlyFlags = 0x00;
         private final TeamsPacket.NameTagVisibility nameTagVisibility = TeamsPacket.NameTagVisibility.NEVER;
-        private final NamedTextColor teamColor = NamedTextColor.DARK_GREEN;
+        private final TeamsPacket.CollisionRule collisionRule = TeamsPacket.CollisionRule.ALWAYS;
+        private final int teamColor = 2; // DARK_GREEN
 
 
         /**
@@ -414,9 +415,9 @@ public class Sidebar implements Scoreboard {
             teamsPacket.teamDisplayName = teamDisplayName;
             teamsPacket.friendlyFlags = friendlyFlags;
             teamsPacket.nameTagVisibility = nameTagVisibility;
+            teamsPacket.collisionRule = collisionRule;
             teamsPacket.teamColor = teamColor;
-            teamsPacket.teamPrefix = prefix;
-            teamsPacket.teamSuffix = suffix;
+            splitContent(prefix, teamsPacket);
             teamsPacket.entities = new String[]{entityName};
             return teamsPacket;
         }
@@ -446,9 +447,9 @@ public class Sidebar implements Scoreboard {
             teamsPacket.teamDisplayName = teamDisplayName;
             teamsPacket.friendlyFlags = friendlyFlags;
             teamsPacket.nameTagVisibility = nameTagVisibility;
+            teamsPacket.collisionRule = collisionRule;
             teamsPacket.teamColor = teamColor;
-            teamsPacket.teamPrefix = prefix;
-            teamsPacket.teamSuffix = suffix;
+            splitContent(prefix, teamsPacket);
             return teamsPacket;
         }
 
@@ -459,6 +460,52 @@ public class Sidebar implements Scoreboard {
          */
         private String getEntityName() {
             return entityName;
+        }
+
+        /**
+         * Splits a {@link Component} into prefix (max 16 chars) and suffix (max 16 chars)
+         * for the 1.9.4 protocol limit, and sets them on the packet.
+         * <p>
+         * Carries forward the last color code from prefix so the suffix
+         * keeps the intended color.
+         */
+        private static void splitContent(Component content, TeamsPacket packet) {
+            String legacy = LegacyComponentSerializer.legacySection().serialize(content);
+            if (legacy.length() <= 16) {
+                packet.teamPrefix = Component.text(legacy);
+                packet.teamSuffix = Component.text("");
+                return;
+            }
+
+            String prefix = legacy.substring(0, 16);
+            String suffix = legacy.substring(16, Math.min(legacy.length(), 32));
+
+            // Carry forward the last color code to preserve color in the suffix
+            String lastColor = getLastColorCode(prefix);
+            if (lastColor != null && !suffix.startsWith("§")) {
+                suffix = lastColor + suffix;
+                if (suffix.length() > 16) {
+                    suffix = suffix.substring(0, 16);
+                }
+            }
+
+            packet.teamPrefix = Component.text(prefix);
+            packet.teamSuffix = Component.text(suffix);
+        }
+
+        /**
+         * Finds the last valid Minecraft color/formatting code in the string.
+         */
+        private static String getLastColorCode(String s) {
+            for (int i = s.length() - 2; i >= 0; i--) {
+                if (s.charAt(i) == '§') {
+                    char code = s.charAt(i + 1);
+                    if ("0123456789abcdefklmnor".indexOf(code) >= 0) {
+                        return s.substring(i, i + 2);
+                    }
+                }
+            }
+            return null;
         }
 
         /**

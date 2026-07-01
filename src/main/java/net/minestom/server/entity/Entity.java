@@ -137,7 +137,7 @@ public class Entity implements Viewable, EventHandler, DataContainer, Permission
         Entity.entityByUuid.put(uuid, this);
 
         // Always Show Name Tag, we need at least one attribute
-        metadata.setIndex((byte) 3, Metadata.Byte((byte) 0));
+        metadata.setIndex((byte) 3, Metadata.Boolean(false));
     }
 
     public Entity(@NotNull EntityType entityType) {

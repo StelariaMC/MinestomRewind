@@ -127,8 +127,6 @@ public class NettyPlayerConnection extends PlayerConnection {
     public void sendPacket(@NotNull ServerPacket serverPacket) {
         if (!channel.isActive())
             return;
-        LoggerFactory.getLogger(NettyPlayerConnection.class).warn("id: " + Integer.toHexString(serverPacket.getId()),
-                serverPacket.getClass().toString());
         if (shouldSendPacket(serverPacket)) {
             if (getPlayer() != null) {
                 // Flush happen during #update()

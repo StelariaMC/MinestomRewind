@@ -57,7 +57,10 @@ public class EntityProjectile extends Entity {
         if (getEntityMeta() instanceof ProjectileMeta) {
             ((ProjectileMeta) getEntityMeta()).setShooter(this.shooter);
         }
-        setGravity(0.02f, 0.04f, 1.96f);
+        // Vanilla 1.9.4 projectile physics:
+        //   gravity: -0.03 blocks/tick (= -0.6 blocks/sec²)
+        //   drag: 0.99 on all axes
+        setGravity(0.6f, 0f, 0.6f);
     }
 
     @Nullable
@@ -122,6 +125,17 @@ public class EntityProjectile extends Entity {
     public void tick(long time) {
         Position posBefore = getPosition().clone();
         super.tick(time);
+
+        // Apply vanilla 0.99 drag to all axes.
+        // Base Entity applies 0.98 to X/Z and nothing to Y;
+        // correct X/Z (0.98→0.99) and add missing Y drag.
+        if (hasVelocity() && !isOnGround()) {
+            Vector vel = getVelocity();
+            vel.setX(vel.getX() * 0.99 / 0.98);
+            vel.setY(vel.getY() * 0.99);
+            vel.setZ(vel.getZ() * 0.99 / 0.98);
+        }
+
         Position posNow = getPosition().clone();
         if (isStuck(posBefore, posNow)) {
             if (super.onGround) {

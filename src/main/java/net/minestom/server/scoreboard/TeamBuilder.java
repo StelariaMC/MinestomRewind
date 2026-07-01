@@ -2,6 +2,7 @@ package net.minestom.server.scoreboard;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.network.packet.server.play.TeamsPacket.CollisionRule;
 import net.minestom.server.network.packet.server.play.TeamsPacket.NameTagVisibility;
 
 /**
@@ -203,6 +204,30 @@ public class TeamBuilder {
      */
     public TeamBuilder friendlyFlags(byte flag) {
         this.team.setFriendlyFlags(flag);
+        return this;
+    }
+
+    /**
+     * Updates the {@link CollisionRule} of the {@link Team}.
+     *
+     * @param collisionRule The new collision rule
+     * @return this builder, for chaining
+     */
+    public TeamBuilder updateCollisionRule(CollisionRule collisionRule) {
+        this.team.updateCollisionRule(collisionRule);
+        return this;
+    }
+
+    /**
+     * Changes the {@link CollisionRule} of the {@link Team} without an update packet.
+     * <br><br>
+     * <b>Warning: </b> If you do not call {@link #updateTeamPacket()}, this is only changed of the <b>server side</b>.
+     *
+     * @param collisionRule The new collision rule
+     * @return this builder, for chaining
+     */
+    public TeamBuilder collisionRule(CollisionRule collisionRule) {
+        this.team.setCollisionRule(collisionRule);
         return this;
     }
 

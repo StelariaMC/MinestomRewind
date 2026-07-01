@@ -15,18 +15,17 @@ public enum EntitySpawnType {
         public ServerPacket getSpawnPacket(Entity entity) {
             SpawnObjectPacket packet = new SpawnObjectPacket();
             packet.entityId = entity.getEntityId();
+            packet.uuid = entity.getUuid();
             packet.type = entity.getEntityType().getProtocolId();
             packet.position = entity.getPosition();
             if (entity.getEntityMeta() instanceof ObjectDataProvider) {
                 ObjectDataProvider objectDataProvider = (ObjectDataProvider) entity.getEntityMeta();
                 packet.data = objectDataProvider.getObjectData();
-                if (objectDataProvider.requiresVelocityPacketAtSpawn()) {
-                    Vector velocity = entity.getVelocityForPacket();
-                    packet.velocityX = (short) velocity.getX();
-                    packet.velocityY = (short) velocity.getY();
-                    packet.velocityZ = (short) velocity.getZ();
-                }
             }
+            Vector velocity = entity.getVelocityForPacket();
+            packet.velocityX = (short) velocity.getX();
+            packet.velocityY = (short) velocity.getY();
+            packet.velocityZ = (short) velocity.getZ();
             return packet;
         }
     },

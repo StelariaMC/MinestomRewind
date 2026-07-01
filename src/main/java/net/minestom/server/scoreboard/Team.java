@@ -51,6 +51,11 @@ public class Team {
     private NamedTextColor teamColor;
 
     /**
+     * The collision rule for the team
+     */
+    private TeamsPacket.CollisionRule collisionRule;
+
+    /**
      * Shown before the names of the players who belong to this team.
      */
     private Component prefix;
@@ -58,6 +63,29 @@ public class Team {
      * Shown after the names of the player who belong to this team.
      */
     private Component suffix;
+
+    /**
+     * Maps a {@link NamedTextColor} to its Minecraft chat color index (0-15).
+     */
+    private static int colorToIndex(@NotNull NamedTextColor color) {
+        if (color == NamedTextColor.BLACK) return 0;
+        if (color == NamedTextColor.DARK_BLUE) return 1;
+        if (color == NamedTextColor.DARK_GREEN) return 2;
+        if (color == NamedTextColor.DARK_AQUA) return 3;
+        if (color == NamedTextColor.DARK_RED) return 4;
+        if (color == NamedTextColor.DARK_PURPLE) return 5;
+        if (color == NamedTextColor.GOLD) return 6;
+        if (color == NamedTextColor.GRAY) return 7;
+        if (color == NamedTextColor.DARK_GRAY) return 8;
+        if (color == NamedTextColor.BLUE) return 9;
+        if (color == NamedTextColor.GREEN) return 10;
+        if (color == NamedTextColor.AQUA) return 11;
+        if (color == NamedTextColor.RED) return 12;
+        if (color == NamedTextColor.LIGHT_PURPLE) return 13;
+        if (color == NamedTextColor.YELLOW) return 14;
+        if (color == NamedTextColor.WHITE) return 15;
+        return 15;
+    }
 
     /**
      * Default constructor to creates a team.
@@ -70,6 +98,7 @@ public class Team {
         this.teamDisplayName = Component.text("");
         this.friendlyFlags = 0x00;
         this.nameTagVisibility = NameTagVisibility.ALWAYS;
+        this.collisionRule = TeamsPacket.CollisionRule.ALWAYS;
 
         this.teamColor = NamedTextColor.WHITE;
         this.prefix = Component.text("");
@@ -158,6 +187,38 @@ public class Team {
      */
     public void updateNameTagVisibility(@NotNull NameTagVisibility nameTagVisibility) {
         this.setNameTagVisibility(nameTagVisibility);
+        sendUpdatePacket();
+    }
+
+    /**
+     * Gets the collision rule of the team.
+     *
+     * @return the collision rule
+     */
+    @NotNull
+    public TeamsPacket.CollisionRule getCollisionRule() {
+        return collisionRule;
+    }
+
+    /**
+     * Changes the {@link TeamsPacket.CollisionRule} of the team.
+     * <br><br>
+     * <b>Warning:</b> This is only changed on the <b>server side</b>.
+     *
+     * @param collisionRule the new collision rule
+     * @see #updateCollisionRule(TeamsPacket.CollisionRule)
+     */
+    public void setCollisionRule(@NotNull TeamsPacket.CollisionRule collisionRule) {
+        this.collisionRule = collisionRule;
+    }
+
+    /**
+     * Changes the {@link TeamsPacket.CollisionRule} of the team and sends an update packet.
+     *
+     * @param collisionRule the new collision rule
+     */
+    public void updateCollisionRule(@NotNull TeamsPacket.CollisionRule collisionRule) {
+        this.setCollisionRule(collisionRule);
         sendUpdatePacket();
     }
 
@@ -268,7 +329,8 @@ public class Team {
         teamsCreationPacket.teamDisplayName = this.teamDisplayName;
         teamsCreationPacket.friendlyFlags = this.friendlyFlags;
         teamsCreationPacket.nameTagVisibility = this.nameTagVisibility;
-        teamsCreationPacket.teamColor = this.teamColor;
+        teamsCreationPacket.collisionRule = this.collisionRule;
+        teamsCreationPacket.teamColor = colorToIndex(this.teamColor);
         teamsCreationPacket.teamPrefix = this.prefix;
         teamsCreationPacket.teamSuffix = this.suffix;
         teamsCreationPacket.entities = this.members.toArray(new String[0]);
@@ -365,7 +427,8 @@ public class Team {
         updatePacket.teamDisplayName = this.teamDisplayName;
         updatePacket.friendlyFlags = this.friendlyFlags;
         updatePacket.nameTagVisibility = this.nameTagVisibility;
-        updatePacket.teamColor = this.teamColor;
+        updatePacket.collisionRule = this.collisionRule;
+        updatePacket.teamColor = colorToIndex(this.teamColor);
         updatePacket.teamPrefix = this.prefix;
         updatePacket.teamSuffix = this.suffix;
 

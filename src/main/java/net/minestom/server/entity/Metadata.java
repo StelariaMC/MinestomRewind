@@ -66,7 +66,7 @@ public class Metadata {
         return new Value<>(TYPE_CHAT, value, writer -> writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(value)));
     }
     public static Value<Boolean> Boolean(boolean value) {
-        return new Value<>(TYPE_BYTE, value, writer -> writer.writeByte((byte) (value ? 1 : 0)));
+        return new Value<>(TYPE_BOOLEAN, value, writer -> writer.writeByte((byte) (value ? 1 : 0)));
     }
 
     public static final byte TYPE_BYTE = 0;

@@ -31,12 +31,9 @@ public class SpawnObjectPacket implements ServerPacket {
         writer.writeByte((byte) (position.getYaw() * 256 / 360));
 
         writer.writeInt(data);
-
-        if (data > 0) {
-            writer.writeShort(velocityX);
-            writer.writeShort(velocityY);
-            writer.writeShort(velocityZ);
-        }
+        writer.writeShort(velocityX);
+        writer.writeShort(velocityY);
+        writer.writeShort(velocityZ);
     }
 
     @Override
