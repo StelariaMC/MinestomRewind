@@ -6,8 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClientAnimationPacket extends ClientPlayPacket {
 
+    public int hand;
+
     @Override
     public void read(@NotNull BinaryReader reader) {
-
+        this.hand = reader.readVarInt();
     }
 }

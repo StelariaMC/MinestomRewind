@@ -13,6 +13,8 @@ import net.minestom.server.network.packet.server.play.ChatMessagePacket;
 import net.minestom.server.network.packet.server.play.PlayerListHeaderAndFooterPacket;
 import net.minestom.server.network.packet.server.play.SoundEffectPacket;
 import net.minestom.server.network.packet.server.play.TitlePacket;
+import net.minestom.server.registry.Registries;
+import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.utils.PacketUtils;
 import net.minestom.server.utils.Position;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -51,7 +53,9 @@ public interface ForwardingPlayerAudience extends ForwardingAudience {
     @Override
     default void playSound(net.kyori.adventure.sound.@NonNull Sound sound, double x, double y, double z) {
         SoundEffectPacket soundEffectPacket = new SoundEffectPacket();
-        soundEffectPacket.soundName = sound.name().value();
+        net.minestom.server.sound.Sound minestomSound = Registries.getSound(NamespaceID.from(sound.name().namespace(), sound.name().value()));
+        soundEffectPacket.soundId = minestomSound != null ? minestomSound.ordinal() : 0;
+        soundEffectPacket.soundCategory = sound.source().ordinal();
         soundEffectPacket.position = new Position(x, y, z);
         soundEffectPacket.volume = sound.volume();
         soundEffectPacket.pitch = sound.pitch();

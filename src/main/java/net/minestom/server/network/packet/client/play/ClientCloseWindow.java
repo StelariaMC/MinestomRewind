@@ -10,6 +10,6 @@ public class ClientCloseWindow extends ClientPlayPacket {
 
     @Override
     public void read(@NotNull BinaryReader reader) {
-        this.windowId = reader.readVarInt();
+        this.windowId = reader.readByte();
     }
 }

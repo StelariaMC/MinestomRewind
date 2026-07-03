@@ -9,6 +9,7 @@ public class MapDataPacket implements ServerPacket {
 
     public int mapId;
     public byte scale;
+    public boolean trackingPosition;
 
     public Icon[] icons;
 
@@ -22,6 +23,7 @@ public class MapDataPacket implements ServerPacket {
     public void write(@NotNull BinaryWriter writer) {
         writer.writeVarInt(mapId);
         writer.writeByte(scale);
+        writer.writeBoolean(trackingPosition);
 
         if (icons != null && icons.length > 0) {
             writer.writeVarInt(icons.length);
@@ -56,11 +58,11 @@ public class MapDataPacket implements ServerPacket {
 
     public static class Icon {
         public int type;
-        public byte direction;
+        public byte rotation;
         public byte x, z;
 
         private void write(BinaryWriter writer) {
-            writer.writeByte((byte) ((type & 0x0F) | (direction & 0xF0)));
+            writer.writeByte((byte) ((type & 0x0F) << 4 | (rotation & 0x0F)));
             writer.writeByte(x);
             writer.writeByte(z);
         }

@@ -8,6 +8,7 @@ public class ClientInteractEntityPacket extends ClientPlayPacket {
 
     public int targetId;
     public Type type;
+    public int hand;
     public float x;
     public float y;
     public float z;
@@ -18,13 +19,17 @@ public class ClientInteractEntityPacket extends ClientPlayPacket {
         this.type = Type.values()[reader.readVarInt()];
 
         switch (type) {
-            case INTERACT:
-            case ATTACK:
-                break;
             case INTERACT_AT:
                 this.x = reader.readFloat();
                 this.y = reader.readFloat();
                 this.z = reader.readFloat();
+                break;
+        }
+
+        switch (type) {
+            case INTERACT:
+            case INTERACT_AT:
+                this.hand = reader.readVarInt();
                 break;
         }
     }

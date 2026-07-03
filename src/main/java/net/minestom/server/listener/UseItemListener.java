@@ -19,11 +19,11 @@ public class UseItemListener {
 
     public static boolean useItemListener(ClientPlayerBlockPlacementPacket packet, Player player) {
         // Y = -1 = 4096 - 1 = 4095
-        if (packet.blockPosition.getX() != -1 || packet.blockPosition.getY() != 4095 || packet.blockPosition.getZ() != -1 || packet.blockFace != null) {
+        if (packet.blockPosition.getX() != -1 || packet.blockPosition.getY() != 4095 || packet.blockPosition.getZ() != -1) {
             return false;
         }
 
-        useItem(player, 0);
+        useItem(player, packet.hand);
         return true;
     }
 

@@ -37,7 +37,7 @@ public class BlockPlacementListener {
         }
 
         final PlayerInventory playerInventory = player.getInventory();
-        final BlockFace blockFace = packet.blockFace;
+        final BlockFace blockFace = BlockFace.values()[packet.blockFace];
         final BlockPosition blockPosition = packet.blockPosition;
         final Direction direction = blockFace.toDirection();
 

@@ -8,19 +8,20 @@ import org.jetbrains.annotations.NotNull;
 
 public class SoundEffectPacket implements ServerPacket {
 
-    public String soundName;
+    public int soundId;
+    public int soundCategory;
     public Position position;
     public float volume;
     public float pitch;
 
     @Override
     public void write(@NotNull BinaryWriter writer) {
-        writer.writeSizedString(soundName);
+        writer.writeVarInt(soundId);
+        writer.writeVarInt(soundCategory);
         writer.writeInt((int) (position.getX() * 8));
         writer.writeInt((int) (position.getY() * 8));
         writer.writeInt((int) (position.getZ() * 8));
         writer.writeFloat(volume);
-        // 63 is 100%
         writer.writeByte((byte) (pitch * 63));
     }
 

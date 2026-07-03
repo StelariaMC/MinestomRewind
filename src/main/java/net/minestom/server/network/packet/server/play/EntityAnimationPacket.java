@@ -22,10 +22,10 @@ public class EntityAnimationPacket implements ServerPacket {
     }
 
     public enum Animation {
-        SWING_ARM,
+        SWING_MAIN_HAND,
         TAKE_DAMAGE,
         LEAVE_BED,
-        EAT_FOOD,
+        SWING_OFF_HAND,
         CRITICAL_EFFECT,
         MAGICAL_CRITICAL_EFFECT
     }

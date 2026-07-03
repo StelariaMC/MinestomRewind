@@ -42,6 +42,7 @@ import net.minestom.server.network.packet.server.login.LoginDisconnectPacket;
 import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.network.player.NettyPlayerConnection;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.registry.Registries;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.scoreboard.BelowNameTag;
 import net.minestom.server.scoreboard.Team;
@@ -671,7 +672,9 @@ public class Player extends LivingEntity implements CommandSender {
     @Override
     public void playSound(net.kyori.adventure.sound.@NonNull Sound sound, double x, double y, double z) {
         SoundEffectPacket soundEffectPacket = new SoundEffectPacket();
-        soundEffectPacket.soundName = sound.name().value();
+        net.minestom.server.sound.Sound minestomSound = Registries.getSound(NamespaceID.from(sound.name().namespace(), sound.name().value()));
+        soundEffectPacket.soundId = minestomSound != null ? minestomSound.ordinal() : 0;
+        soundEffectPacket.soundCategory = sound.source().ordinal();
         soundEffectPacket.position = new Position(x, y, z);
         soundEffectPacket.volume = sound.volume();
         soundEffectPacket.pitch = sound.pitch();
@@ -701,7 +704,8 @@ public class Player extends LivingEntity implements CommandSender {
      */
     public void playSound(@NotNull Sound sound, int x, int y, int z, float volume, float pitch) {
         SoundEffectPacket soundEffectPacket = new SoundEffectPacket();
-        soundEffectPacket.soundName = sound.getId();
+        soundEffectPacket.soundId = sound.ordinal();
+        soundEffectPacket.soundCategory = 0;
         soundEffectPacket.position = new Position(x, y, z);
         soundEffectPacket.volume = volume;
         soundEffectPacket.pitch = pitch;
@@ -721,7 +725,9 @@ public class Player extends LivingEntity implements CommandSender {
      */
     public void playSound(@NotNull String identifier, int x, int y, int z, float volume, float pitch) {
         SoundEffectPacket soundEffectPacket = new SoundEffectPacket();
-        soundEffectPacket.soundName = identifier;
+        Sound minestomSound = Registries.getSound(NamespaceID.from("minecraft", identifier));
+        soundEffectPacket.soundId = minestomSound != null ? minestomSound.ordinal() : 0;
+        soundEffectPacket.soundCategory = 0;
         soundEffectPacket.position = new Position(x, y, z);
         soundEffectPacket.volume = volume;
         soundEffectPacket.pitch = pitch;

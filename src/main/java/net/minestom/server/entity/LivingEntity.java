@@ -370,7 +370,8 @@ public class LivingEntity extends Entity implements EquipmentHandler {
             final Sound sound = type.getSound(this);
             if (sound != null) {
                 SoundEffectPacket damageSoundPacket = new SoundEffectPacket();
-                damageSoundPacket.soundName = sound.getId();
+                damageSoundPacket.soundId = sound.ordinal();
+                damageSoundPacket.soundCategory = 0;
                 damageSoundPacket.position = getPosition();
                 damageSoundPacket.pitch = 1.0f;
                 damageSoundPacket.volume = 1.0f;
@@ -542,7 +543,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     public void swingMainHand() {
         EntityAnimationPacket animationPacket = new EntityAnimationPacket();
         animationPacket.entityId = getEntityId();
-        animationPacket.animation = EntityAnimationPacket.Animation.SWING_ARM;
+        animationPacket.animation = EntityAnimationPacket.Animation.SWING_MAIN_HAND;
         sendPacketToViewers(animationPacket);
     }
 
@@ -553,7 +554,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     public void swingOffHand() {
         EntityAnimationPacket animationPacket = new EntityAnimationPacket();
         animationPacket.entityId = getEntityId();
-        animationPacket.animation = EntityAnimationPacket.Animation.EAT_FOOD;
+        animationPacket.animation = EntityAnimationPacket.Animation.SWING_OFF_HAND;
         sendPacketToViewers(animationPacket);
     }
 
