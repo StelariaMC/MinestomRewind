@@ -1,5 +1,7 @@
 package net.minestom.server.network.packet.server.play;
 
+import net.kyori.adventure.text.Component;
+import net.minestom.server.chat.Adventure;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.network.packet.server.ServerPacket;
@@ -61,7 +63,7 @@ public class CombatEventPacket implements ServerPacket {
             case DEATH:
                 writer.writeVarInt(playerId);
                 writer.writeInt(opponent);
-                writer.writeSizedString(deathMessage);
+                writer.writeSizedString(Adventure.COMPONENT_SERIALIZER.serialize(Component.text(deathMessage)));
                 break;
         }
     }
