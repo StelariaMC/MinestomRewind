@@ -30,13 +30,17 @@ import java.util.*;
 // TODO should we cache a ByteBuf of this item for faster packet write
 
 /**
- * Represents an item in an inventory ({@link PlayerInventory}, {@link Inventory}) or on the ground ({@link ItemEntity}).
+ * Represents an item in an inventory ({@link PlayerInventory},
+ * {@link Inventory}) or on the ground ({@link ItemEntity}).
  * <p>
- * An item stack cannot be null, you can however use {@link #getAirItem()} instead.
+ * An item stack cannot be null, you can however use {@link #getAirItem()}
+ * instead.
  * <p>
- * WARNING: all setters will not update the item automatically, it will need to be refreshed manually.
+ * WARNING: all setters will not update the item automatically, it will need to
+ * be refreshed manually.
  * Here a non-exhaustive list of what you can do to update the item:
- * {@link PlayerInventory#refreshSlot(short)}, {@link Inventory#refreshSlot(short)} or a raw {@link SetSlotPacket}.
+ * {@link PlayerInventory#refreshSlot(short)},
+ * {@link Inventory#refreshSlot(short)} or a raw {@link SetSlotPacket}.
  */
 public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
 
@@ -93,6 +97,18 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
 
     public ItemStack(@NotNull Material material, byte amount) {
         this(material, amount, (short) 0);
+    }
+
+    public static ItemStack of(@NotNull Material material) {
+        return new ItemStack(material, (byte) 1);
+    }
+
+    public static ItemStack of(@NotNull Material material, int amount) {
+        return new ItemStack(material, (byte) amount);
+    }
+
+    public static ItemStack of(@NotNull Material material, int amount, int damage) {
+        return new ItemStack(material, (byte) amount, (short) damage);
     }
 
     /**
@@ -161,7 +177,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
 
     /**
      * Gets if two items are similar.
-     * It does not take {@link #getAmount()} and {@link #getStackingRule()} in consideration.
+     * It does not take {@link #getAmount()} and {@link #getStackingRule()} in
+     * consideration.
      *
      * @param itemStack The ItemStack to compare to
      * @return true if both items are similar
@@ -206,6 +223,7 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Checks if this item can be placed on the block.
      * This should be enforced only for adventure mode players.
+     * 
      * @param block the block's namespaceID
      * @return <code>true</code> if it can be placed, <code>false</code> otherwise
      */
@@ -215,6 +233,7 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
 
     /**
      * Gets the blocks that this item can be placed on
+     * 
      * @return the {@link Set} of blocks
      */
     public Set<String> getCanPlaceOn() {
@@ -224,8 +243,10 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Checks if this item is allowed to break the provided block.
      * This should be enforced only for adventure mode players.
+     * 
      * @param block the block's namespaceID
-     * @return <code>true</code> if this item can destroy it, otherwise <code>false</code>
+     * @return <code>true</code> if this item can destroy it, otherwise
+     *         <code>false</code>
      */
     public boolean canDestroy(String block) {
         return canDestroy.contains(block);
@@ -233,6 +254,7 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
 
     /**
      * Gets the blocks that this item can destroy
+     * 
      * @return the {@link Set} of blocks
      */
     public Set<String> getCanDestroy() {
@@ -260,7 +282,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Gets the item amount.
      * <p>
-     * WARNING: for amount computation it would be better to use {@link StackingRule#getAmount(ItemStack)}
+     * WARNING: for amount computation it would be better to use
+     * {@link StackingRule#getAmount(ItemStack)}
      * to support all stacking implementation.
      *
      * @return the item amount
@@ -272,13 +295,18 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Changes the item amount.
      * <p>
-     * WARNING: for amount computation it would be better to use {@link StackingRule#getAmount(ItemStack)}
+     * WARNING: for amount computation it would be better to use
+     * {@link StackingRule#getAmount(ItemStack)}
      * to support all stacking implementation.
      *
      * @param amount the new item amount
      */
     public void setAmount(byte amount) {
         this.amount = amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = (byte) Math.max(0, Math.min(127, amount));
     }
 
     /**
@@ -296,7 +324,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Changes the item meta linked to this item.
      * <p>
-     * WARNING: be sure to have nbt data useful for this item, items should automatically get the appropriate
+     * WARNING: be sure to have nbt data useful for this item, items should
+     * automatically get the appropriate
      * item meta.
      *
      * @param itemMeta the new item meta
@@ -336,7 +365,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Gets the item lore.
      *
-     * @return a modifiable list containing the item lore, can be empty if not present
+     * @return a modifiable list containing the item lore, can be empty if not
+     *         present
      */
     @NotNull
     public List<Component> getLore() {
@@ -457,7 +487,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     }
 
     /**
-     * Changes the item hide flag. This is the integer sent when updating the item hide flag.
+     * Changes the item hide flag. This is the integer sent when updating the item
+     * hide flag.
      *
      * @param hideFlag the new item hide flag
      */
@@ -537,8 +568,10 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
     /**
      * Gets the unique identifier of this object.
      * <p>
-     * This value is non persistent and will be randomized once this item is separated with a right-click,
-     * when copied and when the server restart. It is used internally by the data ownership system.
+     * This value is non persistent and will be randomized once this item is
+     * separated with a right-click,
+     * when copied and when the server restart. It is used internally by the data
+     * ownership system.
      *
      * @return this item unique identifier
      */
@@ -679,7 +712,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
      * Will return null if the amount's amount isn't enough.
      *
      * @param amount the quantity to consume
-     * @return the new item with the updated amount, null if the item cannot be consumed by this much
+     * @return the new item with the updated amount, null if the item cannot be
+     *         consumed by this much
      */
     @Nullable
     public ItemStack consume(int amount) {
@@ -769,7 +803,7 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
      *
      * @param player the player
      * @return the custom {@link ItemDisplay} for {@code player},
-     * null to use the normal item display name &amp; lore
+     *         null to use the normal item display name &amp; lore
      */
     public ItemDisplay getCustomDisplay(Player player) {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -815,7 +849,8 @@ public class ItemStack implements DataContainer, PublicCloneable<ItemStack> {
      * @param slot            the slot clicked
      * @param playerInventory true if the click is in the player inventory
      */
-    public void onInventoryClick(@NotNull Player player, @NotNull ClickType clickType, int slot, boolean playerInventory) {
+    public void onInventoryClick(@NotNull Player player, @NotNull ClickType clickType, int slot,
+            boolean playerInventory) {
 
     }
 }
